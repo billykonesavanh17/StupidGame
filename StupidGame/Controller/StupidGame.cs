@@ -13,10 +13,10 @@ namespace StupidGame.Controller
 	/// </summary>
 	public class StupidGame : Game
 	{
-		GraphicsDeviceManager graphics;
-		SpriteBatch spriteBatch;
+		private GraphicsDeviceManager graphics;
+		private SpriteBatch spriteBatch;
 
-		private Player playerOne;
+		private Player player;
 
 
 		public StupidGame ()
@@ -34,6 +34,9 @@ namespace StupidGame.Controller
 		protected override void Initialize ()
 		{
 			// TODO: Add your initialization logic here
+			//Initialize the player class
+
+			player = new Player ();
             
 			base.Initialize ();
 		}
@@ -48,6 +51,10 @@ namespace StupidGame.Controller
 			spriteBatch = new SpriteBatch (GraphicsDevice);
 
 			//TODO: use this.Content to load your game content here 
+
+			// Load the player resources 
+			Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X,GraphicsDevice.Viewport.TitleSafeArea.Y +GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
+			player.Initialize(Content.Load<Texture2D>("Texture/player"), playerPosition);
 		}
 
 		/// <summary>
@@ -76,6 +83,15 @@ namespace StupidGame.Controller
 		protected override void Draw (GameTime gameTime)
 		{
 			graphics.GraphicsDevice.Clear (Color.MistyRose);
+
+			// Start drawing
+			spriteBatch.Begin();
+
+			// Draw the Player
+			player.Draw(spriteBatch);
+
+			// Stop drawing
+			spriteBatch.End();
             
 			//TODO: Add your drawing code here
             
