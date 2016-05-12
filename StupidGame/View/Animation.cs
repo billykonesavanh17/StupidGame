@@ -77,26 +77,78 @@ namespace StupidGame
 		private Rectangle destinationRect = new Rectangle();
 			
 		// Width of a given frame
-		public int FrameWidth;
+		private int frameWidth;
+
+		public int FrameWidth
+		{
+			get { return  frameWidth; }
+			set { frameWidth = value; }
+		}
 
 		// Height of a given frame
-		public int FrameHeight;
+		private int frameHeight;
+
+		public int FrameHeight
+		{
+			get { return frameHeight; }
+			set { frameHeight = value; }
+		}
 
 		// The state of the Animation
-		public bool Active;
+		private bool active;
+
+		public bool Active
+		{
+			get { return active; }
+			set { active = value; }
+		}
 
 		// Determines if the animation will keep playing or deactivate after one run
-		public bool Looping;
+		private bool looping;
+
+		public bool Looping 
+		{
+			get { return looping; }
+			set { looping = value; }
+		}
 
 		// Width of a given frame
-		public Vector2 Position;
-
-		public void Initialize()
+		private Vector2 position;
+	
+		public Vector2 Position
 		{
+			get { return position; }
+			set { position = value; }
 		}
+
+		public void Initialize(Texture2D texture, Vector2 position,
+			int frameWidth, int frameHeight, int frameCount,
+			int frametime, Color color, float scale, bool looping)
+		{
+			// Keep a local copy of the values passed in
+			this.color = color;
+			this.FrameWidth = frameWidth;
+			this.FrameHeight = frameHeight;
+			this.frameCount = frameCount;
+			this.frameTime = frametime;
+			this.scale = scale;
+
+			Looping = looping;
+			Position = position;
+			spriteStrip = texture;
+
+			// Set the time to zero
+			elapsedTime = 0;
+			currentFrame = 0;
+
+			// Set the Animation to active by default
+			Active = true;
+		}
+
 		public void Update()
 		{
 		}
+
 		public void Draw()
 		{
 		}
