@@ -13,11 +13,12 @@ namespace StupidGame.Model
 		private Animation playerAnimation;
 
 		// Animation representing the player
-		public Animation PlayerAnimation;
+		public Animation PlayerAnimation
 		{
 			get { return playerAnimation; }
 			set { playerAnimation = value; }
 		}
+
 
 		// Animation representing the player
 		public Texture2D PlayerTexture;
