@@ -4,8 +4,8 @@
     <Files>
       <File FileName="StupidGame/Controller/StupidGame.cs" Line="182" Column="64" />
       <File FileName="StupidGame/Model/Player.cs" Line="1" Column="1" />
-      <File FileName="StupidGame/View/Animation.cs" Line="17" Column="4" />
-      <File FileName="StupidGame/View/ParallaxingBackground.cs" Line="79" Column="4" />
+      <File FileName="StupidGame/View/Animation.cs" Line="1" Column="1" />
+      <File FileName="StupidGame/View/ParallaxingBackground.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

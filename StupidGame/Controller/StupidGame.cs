@@ -37,6 +37,17 @@ namespace StupidGame.Controller
 		private ParallaxingBackground bgLayer1;
 		private ParallaxingBackground bgLayer2;
 
+		// Enemies
+		private Texture2D enemyTexture;
+		private List<Enemy> enemies;
+
+		// The rate at which the enemies appear
+		private TimeSpan enemySpawnTime;
+		private TimeSpan previousSpawnTime;
+
+		// A random number generator
+		private Random random;
+
 
 		public StupidGame ()
 		{
@@ -92,6 +103,8 @@ namespace StupidGame.Controller
 
 			mainBackground = Content.Load<Texture2D>("Texture/mainbackground");
 
+			enemyTexture = Content.Load<Texture2D>("Texture/mineAnimation");
+
 		}
 
 		private void UpdatePlayer(GameTime gameTime)
@@ -130,6 +143,50 @@ namespace StupidGame.Controller
 			player.Position.Y = MathHelper.Clamp(player.Position.Y, 0,GraphicsDevice.Viewport.Height - player.Height);
 		}
 
+		private void AddEnemy()
+		{ 
+			// Create the animation object
+			Animation enemyAnimation = new Animation();
+
+			// Initialize the animation with the correct animation information
+			enemyAnimation.Initialize(enemyTexture, Vector2.Zero, 47, 61, 8, 30,Color.White, 1f, true);
+
+			// Randomly generate the position of the enemy
+			Vector2 position = new Vector2(GraphicsDevice.Viewport.Width +enemyTexture.Width / 2, random.Next(100, GraphicsDevice.Viewport.Height -100));
+
+			// Create an enemy
+			Enemy enemy = new Enemy();
+
+			// Initialize the enemy
+			enemy.Initialize(enemyAnimation, position); 
+
+			// Add the enemy to the active enemies list
+			enemies.Add(enemy);
+		}
+
+		private void UpdateEnemies(GameTime gameTime)
+		{
+			// Spawn a new enemy enemy every 1.5 seconds
+			if (gameTime.TotalGameTime - previousSpawnTime > enemySpawnTime) 
+			{
+				previousSpawnTime = gameTime.TotalGameTime;
+
+				// Add an Enemy
+				AddEnemy();
+			}
+
+			// Update the Enemies
+			for (int i = enemies.Count - 1; i >= 0; i--) 
+			{
+				enemies[i].Update(gameTime);
+
+				if (enemies[i].Active == false)
+				{
+					enemies.RemoveAt(i);
+				} 
+			}
+		}
+
 		/// <summary>
 		/// Allows the game to run logic such as updating the world,
 		/// checking for collisions, gathering input, and playing audio.
@@ -165,6 +222,9 @@ namespace StupidGame.Controller
 			bgLayer1.Update();
 			bgLayer2.Update();
 
+			// Update the enemies
+			UpdateEnemies(gameTime);
+
 			base.Update (gameTime);
 		}
 
@@ -184,6 +244,12 @@ namespace StupidGame.Controller
 			// Draw the moving background
 			bgLayer1.Draw(spriteBatch);
 			bgLayer2.Draw(spriteBatch);
+
+			// Draw the Enemies
+			for (int i = 0; i < enemies.Count; i++)
+			{
+				enemies[i].Draw(spriteBatch);
+			}
 
 			// Draw the Player
 			player.Draw(spriteBatch);
