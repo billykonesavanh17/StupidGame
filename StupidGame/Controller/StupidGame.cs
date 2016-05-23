@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using StupidGame.Model;
 using StupidGame.View;
 
@@ -48,6 +49,16 @@ namespace StupidGame.Controller
 		// A random number generator
 		private Random random;
 
+		private Texture2D projectileTexture;
+		private List<Projectile> projectiles;
+
+		// The rate of fire of the player laser
+		private TimeSpan fireTime;
+		private TimeSpan previousFireTime;
+
+		private Texture2D explosionTexture;
+		private List<Animation> explosions;
+
 
 		public StupidGame ()
 		{
@@ -67,9 +78,24 @@ namespace StupidGame.Controller
 			//Initialize the player class
 
 			player = new Player ();
+			random = new Random ();
+			enemies = new List<Enemy> ();
+
+			// Set the time keepers to zero
+			previousSpawnTime = TimeSpan.Zero;
+
+			// Used to determine how fast enemy respawns
+			enemySpawnTime = TimeSpan.FromSeconds(1.0f);
 
 			// Set a constant player move speed
 			playerMoveSpeed = 8.0f;
+
+			projectiles = new List<Projectile>();
+
+			explosions = new List<Animation>();
+
+			// Set the laser to fire every quarter second
+			fireTime = TimeSpan.FromSeconds(.15f);
 
 			//Initialize Background layers
 			bgLayer1 = new ParallaxingBackground();
@@ -103,7 +129,11 @@ namespace StupidGame.Controller
 
 			mainBackground = Content.Load<Texture2D>("Texture/mainbackground");
 
-			enemyTexture = Content.Load<Texture2D>("Texture/mineAnimation");
+			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
+
+			projectileTexture = Content.Load<Texture2D>("Texture/laser");
+
+			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
 
 		}
 
@@ -138,6 +168,16 @@ namespace StupidGame.Controller
 				player.Position.Y += playerMoveSpeed;
 			}
 
+			// Fire only every interval we set as the fireTime
+			if (gameTime.TotalGameTime - previousFireTime > fireTime)
+			{
+				// Reset our current time
+				previousFireTime = gameTime.TotalGameTime;
+
+				// Add the projectile, but add it to the front and center of the player
+				AddProjectile(player.Position + new Vector2(player.Width / 2, 0));
+			}
+
 			// Make sure that the player does not go out of bounds
 			player.Position.X = MathHelper.Clamp(player.Position.X, 0,GraphicsDevice.Viewport.Width - player.Width);
 			player.Position.Y = MathHelper.Clamp(player.Position.Y, 0,GraphicsDevice.Viewport.Height - player.Height);
@@ -157,11 +197,40 @@ namespace StupidGame.Controller
 			// Create an enemy
 			Enemy enemy = new Enemy();
 
+			// Add the enemy to the active enemies list
+			enemies.Add(enemy);
+
 			// Initialize the enemy
 			enemy.Initialize(enemyAnimation, position); 
 
-			// Add the enemy to the active enemies list
-			enemies.Add(enemy);
+		}
+
+		private void AddProjectile(Vector2 position)
+		{
+			Projectile projectile = new Projectile(); 
+			projectile.Initialize(GraphicsDevice.Viewport, projectileTexture,position); 
+			projectiles.Add(projectile);
+		}
+
+		private void AddExplosion(Vector2 position)
+		{
+			Animation explosion = new Animation();
+			explosion.Initialize(explosionTexture,position, 134, 134, 12, 45, Color.White, 1f,false);
+			explosions.Add(explosion);
+		}
+
+		private void UpdateProjectiles()
+		{
+			// Update the Projectiles
+			for (int i = projectiles.Count - 1; i >= 0; i--) 
+			{
+				projectiles[i].Update();
+
+				if (projectiles[i].Active == false)
+				{
+					projectiles.RemoveAt(i);
+				} 
+			}
 		}
 
 		private void UpdateEnemies(GameTime gameTime)
@@ -182,8 +251,89 @@ namespace StupidGame.Controller
 
 				if (enemies[i].Active == false)
 				{
-					enemies.RemoveAt(i);
+					// If not active and health <= 0
+					if (enemies [i].Health <= 0) 
+					{
+						// Add an explosion
+						AddExplosion (enemies [i].Position);
+						enemies.RemoveAt (i);
+					}
 				} 
+			}
+		}
+
+		private void UpdateExplosions(GameTime gameTime)
+		{
+			for (int i = explosions.Count - 1; i >= 0; i--)
+			{
+				explosions[i].Update(gameTime);
+				if (explosions[i].Active == false)
+				{
+					explosions.RemoveAt(i);
+				}
+			}
+		}
+
+		private void UpdateCollision()
+		{
+			// Use the Rectangle's built-in intersect function to 
+			// determine if two objects are overlapping
+			Rectangle rectangle1;
+			Rectangle rectangle2;
+
+			// Only create the rectangle once for the player
+			rectangle1 = new Rectangle((int)player.Position.X,
+				(int)player.Position.Y,
+				player.Width,
+				player.Height);
+
+			// Do the collision between the player and the enemies
+			for (int i = 0; i <enemies.Count; i++)
+			{
+				rectangle2 = new Rectangle((int)enemies[i].Position.X,
+					(int)enemies[i].Position.Y,
+					enemies[i].Width,
+					enemies[i].Height);
+
+				// Determine if the two objects collided with each
+				// other
+				if(rectangle1.Intersects(rectangle2))
+				{
+					// Subtract the health from the player based on
+					// the enemy damage
+					player.Health -= enemies[i].Damage;
+
+					// Since the enemy collided with the player
+					// destroy it
+					enemies[i].Health = 0;
+
+					// If the player health is less than zero we died
+					if (player.Health <= 0)
+						player.Active = false; 
+				}
+
+			}
+			// Projectile vs Enemy Collision
+			for (int i = 0; i < projectiles.Count; i++)
+			{
+				for (int j = 0; j < enemies.Count; j++)
+				{
+					// Create the rectangles we need to determine if we collided with each other
+					rectangle1 = new Rectangle((int)projectiles[i].Position.X - 
+						projectiles[i].Width / 2,(int)projectiles[i].Position.Y - 
+						projectiles[i].Height / 2,projectiles[i].Width, projectiles[i].Height);
+
+					rectangle2 = new Rectangle((int)enemies[j].Position.X - enemies[j].Width / 2,
+						(int)enemies[j].Position.Y - enemies[j].Height / 2,
+						enemies[j].Width, enemies[j].Height);
+
+					// Determine if the two objects collided with each other
+					if (rectangle1.Intersects(rectangle2))
+					{
+						enemies[j].Health -= projectiles[i].Damage;
+						projectiles[i].Active = false;
+					}
+				}
 			}
 		}
 
@@ -225,6 +375,15 @@ namespace StupidGame.Controller
 			// Update the enemies
 			UpdateEnemies(gameTime);
 
+			// Update the collision
+			UpdateCollision();
+
+			// Update the projectiles
+			UpdateProjectiles();
+
+			// Update the explosions
+			UpdateExplosions(gameTime);
+
 			base.Update (gameTime);
 		}
 
@@ -249,6 +408,18 @@ namespace StupidGame.Controller
 			for (int i = 0; i < enemies.Count; i++)
 			{
 				enemies[i].Draw(spriteBatch);
+			}
+
+			// Draw the Projectiles
+			for (int i = 0; i < projectiles.Count; i++)
+			{
+				projectiles[i].Draw(spriteBatch);
+			}
+
+			// Draw the explosions
+			for (int i = 0; i < explosions.Count; i++)
+			{
+				explosions[i].Draw(spriteBatch);
 			}
 
 			// Draw the Player

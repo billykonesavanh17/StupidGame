@@ -7,8 +7,9 @@ namespace StupidGame
 {
 	public class Enemy
 	{
+		private Animation enemyAnimation;
 		// Animation representing the enemy
-		public Animation enemyAnimation
+		public Animation EnemyAnimation
 
 		{
 			get { return enemyAnimation; }
@@ -18,66 +19,67 @@ namespace StupidGame
 		// The position of the enemy ship relative to the top left corner of thescreen
 		public Vector2 Position;
 
+		private bool active;
 		// The state of the Enemy Ship
-		public bool active
+		public bool Active
 		{
 			get { return active; }
 			set { active = value; }
 		}
 
+
+		private int health;
 		// The hit points of the enemy, if this goes to zero the enemy dies
-		public int health
+		public int Health
 		{
 			get { return health; }
 			set { health = value; }
 		}
 
+		private int damage;
 		// The amount of damage the enemy inflicts on the player ship
-		public int damage
+		public int Damage
 		{
 			get { return damage; }
 			set { damage = value; }
 		}
 
 		// The amount of score the enemy will give to the player
-		public int value
-		{
-			get { return value; }
-			set { value = value; }
-		}
+		public int Value;
+
 
 		// Get the width of the enemy ship
 		public int Width
 		{
-			get { return EnemyAnimation.FrameWidth; } 
+			get { return enemyAnimation.FrameWidth; } 
 		}
 
 		// Get the height of the enemy ship
 		public int Height
 		{
-			get { return EnemyAnimation.FrameHeight; } 
+			get { return enemyAnimation.FrameHeight; } 
 		}
 
 		// The speed at which the enemy moves
-		float enemyMoveSpeed;
+		public float enemyMoveSpeed;
 
 		public void Initialize(Animation animation,Vector2 position)
 		{
 			// Load the enemy ship texture
-			EnemyAnimation = animation;
+			enemyAnimation = animation;
 
 			// Set the position of the enemy
 			Position = position;
 
 			// We initialize the enemy to be active so it will be update in the game
-			Active = true;
+			active = true;
 
 
 			// Set the health of the enemy
-			Health = 10;
+			health = 10;
 
 			// Set the amount of damage the enemy can do
-			Damage = 10;
+			damage = 10;
 
 			// Set how fast the enemy moves
 			enemyMoveSpeed = 6f;
@@ -95,24 +97,24 @@ namespace StupidGame
 			Position.X -= enemyMoveSpeed;
 
 			// Update the position of the Animation
-			EnemyAnimation.Position = Position;
+			enemyAnimation.Position = Position;
 
 			// Update Animation
-			EnemyAnimation.Update(gameTime);
+			enemyAnimation.Update(gameTime);
 
 			// If the enemy is past the screen or its health reaches 0 then deactivateit
-			if (Position.X < -Width || Health <= 0)
+			if (Position.X < -Width || health <= 0)
 			{
 				// By setting the Active flag to false, the game will remove this objet fromthe
 				// active game list
-				Active = false;
+				active = false;
 			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			// Draw the animation
-			EnemyAnimation.Draw(spriteBatch);
+			enemyAnimation.Draw(spriteBatch);
 		}
 	}
 }
