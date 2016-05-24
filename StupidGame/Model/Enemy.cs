@@ -76,7 +76,7 @@ namespace StupidGame
 
 
 			// Set the health of the enemy
-			health = 10;
+			health = 5;
 
 			// Set the amount of damage the enemy can do
 			damage = 10;

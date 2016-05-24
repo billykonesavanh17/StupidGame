@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Storage;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using StupidGame.Model;
 using StupidGame.View;
@@ -59,6 +61,21 @@ namespace StupidGame.Controller
 		private Texture2D explosionTexture;
 		private List<Animation> explosions;
 
+		// The sound that is played when a laser is fired
+		private SoundEffect laserSound;
+
+		// The sound used when the player or an enemy dies
+		private SoundEffect explosionSound;
+
+		// The music played during gameplay
+		private Song gameplayMusic;
+
+		//Number that holds the player score
+		private int score;
+
+		// The font used to display UI elements
+		private SpriteFont font;
+
 
 		public StupidGame ()
 		{
@@ -93,6 +110,9 @@ namespace StupidGame.Controller
 			projectiles = new List<Projectile>();
 
 			explosions = new List<Animation>();
+
+			//Set player's score to zero
+			score = 0;
 
 			// Set the laser to fire every quarter second
 			fireTime = TimeSpan.FromSeconds(.15f);
@@ -135,6 +155,19 @@ namespace StupidGame.Controller
 
 			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
 
+			// Load the music
+			gameplayMusic = Content.Load<Song>("Sound/gameMusic");
+
+			// Load the laser and explosion sound effect
+			laserSound = Content.Load<SoundEffect>("Sound/laserFire");
+			explosionSound = Content.Load<SoundEffect>("Sound/explosion");
+
+			// Load the score font
+			font = Content.Load<SpriteFont>("Font/gameFont");
+
+			// Start the music right away
+			PlayMusic(gameplayMusic);
+
 		}
 
 		private void UpdatePlayer(GameTime gameTime)
@@ -176,11 +209,20 @@ namespace StupidGame.Controller
 
 				// Add the projectile, but add it to the front and center of the player
 				AddProjectile(player.Position + new Vector2(player.Width / 2, 0));
+				// Play the laser sound
+				laserSound.Play();
 			}
 
 			// Make sure that the player does not go out of bounds
 			player.Position.X = MathHelper.Clamp(player.Position.X, 0,GraphicsDevice.Viewport.Width - player.Width);
 			player.Position.Y = MathHelper.Clamp(player.Position.Y, 0,GraphicsDevice.Viewport.Height - player.Height);
+
+			// reset score if player health goes to zero
+			if (player.Health <= 0)
+			{
+				player.Health = 100;
+				score = 0;
+			}
 		}
 
 		private void AddEnemy()
@@ -217,6 +259,21 @@ namespace StupidGame.Controller
 			Animation explosion = new Animation();
 			explosion.Initialize(explosionTexture,position, 134, 134, 12, 45, Color.White, 1f,false);
 			explosions.Add(explosion);
+		}
+
+		private void PlayMusic(Song song)
+		{
+			// Due to the way the MediaPlayer plays music,
+			// we have to catch the exception. Music will play when the game is not tethered
+			try
+			{
+			// Play the music
+			MediaPlayer.Play(song);
+
+			// Loop the currently playing song
+			MediaPlayer.IsRepeating = true;
+			}
+			catch { }
 		}
 
 		private void UpdateProjectiles()
@@ -256,6 +313,10 @@ namespace StupidGame.Controller
 					{
 						// Add an explosion
 						AddExplosion (enemies [i].Position);
+						// Play the explosion sound
+						explosionSound.Play();
+						//Add to the player's score
+						score += enemies[i].Value;
 						enemies.RemoveAt (i);
 					}
 				} 
@@ -421,6 +482,11 @@ namespace StupidGame.Controller
 			{
 				explosions[i].Draw(spriteBatch);
 			}
+
+			// Draw the score
+			spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+			// Draw the player health
+			spriteBatch.DrawString(font, "health: " + player.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
 
 			// Draw the Player
 			player.Draw(spriteBatch);

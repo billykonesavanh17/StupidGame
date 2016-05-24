@@ -2,27 +2,12 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="StupidGame/Controller/StupidGame.cs">
     <Files>
-      <File FileName="StupidGame/Controller/StupidGame.cs" Line="42" Column="11" />
-      <File FileName="StupidGame/Model/Player.cs" Line="21" Column="3" />
-      <File FileName="StupidGame/View/Animation.cs" Line="1" Column="1" />
+      <File FileName="StupidGame/Controller/StupidGame.cs" Line="423" Column="5" />
       <File FileName="StupidGame/View/ParallaxingBackground.cs" Line="14" Column="32" />
-      <File FileName="StupidGame/Model/Enemy.cs" Line="45" Column="25" />
+      <File FileName="StupidGame/Model/Enemy.cs" Line="50" Column="3" />
+      <File FileName="StupidGame/Model/Projectile.cs" Line="79" Column="4" />
+      <File FileName="StupidGame/Model/Player.cs" Line="21" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="StupidGame" expanded="True">
-            <Node name="StupidGame" expanded="True">
-              <Node name="Controller" expanded="True">
-                <Node name="StupidGame.cs" selected="True" />
-              </Node>
-              <Node name="Model" expanded="True" />
-              <Node name="View" expanded="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
