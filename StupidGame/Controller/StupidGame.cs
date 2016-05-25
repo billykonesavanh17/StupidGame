@@ -151,7 +151,7 @@ namespace StupidGame.Controller
 
 			enemyTexture = Content.Load<Texture2D>("Animation/mineAnimation");
 
-			projectileTexture = Content.Load<Texture2D>("Texture/laser");
+			projectileTexture = Content.Load<Texture2D>("Texture/brucekick");
 
 			explosionTexture = Content.Load<Texture2D>("Animation/explosion");
 
