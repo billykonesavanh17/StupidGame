@@ -76,6 +76,11 @@ namespace StupidGame.Controller
 		// The font used to display UI elements
 		private SpriteFont font;
 
+		private TimeSpan iceBeamFireTime;
+		private TimeSpan previousIceBeamTime;
+		private List<IceBeamWeapon> IceBeams;
+		private Animation IceBeamAnimation;
+
 
 		public StupidGame ()
 		{
@@ -120,6 +125,8 @@ namespace StupidGame.Controller
 			//Initialize Background layers
 			bgLayer1 = new ParallaxingBackground();
 			bgLayer2 = new ParallaxingBackground();
+
+			iceBeamFireTime = TimeSpan.FromSeconds (.2f);
             
 			base.Initialize ();
 		}
@@ -164,6 +171,8 @@ namespace StupidGame.Controller
 
 			// Load the score font
 			font = Content.Load<SpriteFont>("Font/gameFont");
+
+			IceBeamAnimation = Content.Load<Animation> ("Animation/icebeam");
 
 			// Start the music right away
 			PlayMusic(gameplayMusic);
@@ -222,6 +231,31 @@ namespace StupidGame.Controller
 			{
 				player.Health = 100;
 				score = 0;
+			}
+
+			if(gameTime.ElapsedGameTime - previousIceBeamTime > iceBeamFireTime & currentKeyboardState.IsKeyDown ((Keys.U)))
+			{
+				previousIceBeamTime = gameTime.TotalGameTime;
+				AddIceBeam (player.Position + new Vector2 (player.Width / 2, 0));
+			}
+		}
+
+		private void AddIceBeam(Vector2 position)
+		{
+			IceBeamWeapon iceBlaster = new IceBeamWeapon ();
+			iceBlaster.Initialize (GraphicsDevice.Viewport, IceBeamAnimation, position);
+			IceBeams.Add (iceBlaster);
+		}
+
+		private void UpdateIceBeam()
+		{
+			for (int i = IceBeams.Count - 1; i >= 0; i--)
+			{
+				IceBeams [i].Update ();
+				if(IceBeams[i].Active == false)
+				{
+					IceBeams.RemoveAt (i);
+				}
 			}
 		}
 
@@ -442,6 +476,10 @@ namespace StupidGame.Controller
 			// Update the projectiles
 			UpdateProjectiles();
 
+			UpdateIceBeam ();
+
+
+
 			// Update the explosions
 			UpdateExplosions(gameTime);
 
@@ -464,6 +502,11 @@ namespace StupidGame.Controller
 			// Draw the moving background
 			bgLayer1.Draw(spriteBatch);
 			bgLayer2.Draw(spriteBatch);
+
+			for(int index = 0; index < IceBeams.Count; index++)
+			{
+				IceBeams [index].Draw (spriteBatch);
+			}
 
 			// Draw the Enemies
 			for (int i = 0; i < enemies.Count; i++)

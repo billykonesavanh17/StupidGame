@@ -1,22 +1,23 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using StupidGame.View;
 
 
 namespace StupidGame
 {
 	public class IceBeamWeapon
 	{
+
 		// Image representing the Projectile
-		private Texture2D texture;
+		private Animation iceBeamAnimation;
+		// Animation representing the enemy
+		public Animation IceBeamAnimation
 
-		public Texture2D Texture
 		{
-			get { return texture; }
-			set { texture = value; }
+			get { return iceBeamAnimation; }
+			set { iceBeamAnimation = value; }
 		}
-
 		// Position of the Projectile relative to the upper left side of the screen
 		private Vector2 position;
 		public Vector2 Position
@@ -44,19 +45,7 @@ namespace StupidGame
 		}
 
 		// Represents the viewable boundary of the game
-		Viewport viewport;
-
-		// Get the width of the projectile ship
-		public int Width
-		{
-			get { return Texture.Width; }
-		}
-
-		// Get the height of the projectile ship
-		public int Height
-		{
-			get { return Texture.Height; }
-		}
+		private Viewport viewPort;
 
 
 		private float iceBeamMoveSpeed;
@@ -68,9 +57,10 @@ namespace StupidGame
 		}
 
 
-		public void Initialize(Texture2D texture, Vector2 position)
+		public void Initialize(Viewport viewPort, Animation animation, Vector2 position)
 		{
-			this.texture = texture;
+			this.viewPort = viewPort;
+			this.iceBeamAnimation = animation;
 			this.position = position;
 			Active = true;
 			Damage = 4;
@@ -81,14 +71,17 @@ namespace StupidGame
 		{
 			// Projectiles always move to the right
 			Position.X += iceBeamMoveSpeed;
-			//position.Y += 0;
+			position.Y += 0;
 
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(texture, position, null, Color.White, position.Y*3,
-				 Vector2.Zero, 2f, SpriteEffects.None, 0f);
+			//spriteBatch.Draw(Animation, position, null, Color.White, position.Y*3,
+			//	 Vector2.Zero, 2f, SpriteEffects.None, 0f);
+
+			// Draw the animation
+			iceBeamAnimation.Draw(spriteBatch);
 		}
 	}
 }
