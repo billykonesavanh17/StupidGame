@@ -9,10 +9,21 @@ namespace StupidGame
 	public class IceBeamWeapon
 	{
 		// Image representing the Projectile
-		private Texture2D Texture;
+		private Texture2D texture;
+
+		public Texture2D Texture
+		{
+			get { return texture; }
+			set { texture = value; }
+		}
 
 		// Position of the Projectile relative to the upper left side of the screen
-		private Vector2 Position;
+		private Vector2 position;
+		public Vector2 Position
+		{
+			get { return position; }
+			set { position = value; }
+		}
 
 
 		private bool active;
@@ -47,37 +58,37 @@ namespace StupidGame
 			get { return Texture.Height; }
 		}
 
+
+		private float iceBeamMoveSpeed;
 		// Determines how fast the projectile moves
-		float projectileMoveSpeed;
-
-
-		public void Initialize(Viewport viewport, Texture2D texture, Vector2 position)
+		public float IceBeamMoveSpeed
 		{
-			Texture = texture;
-			Position = position;
-			this.viewport = viewport;
+			get { return iceBeamMoveSpeed; }
+			set { iceBeamMoveSpeed = value; }
+		}
 
+
+		public void Initialize(Texture2D texture, Vector2 position)
+		{
+			this.texture = texture;
+			this.position = position;
 			Active = true;
-
 			Damage = 4;
-
-			projectileMoveSpeed = 50f;
+			iceBeamMoveSpeed = 50f;
 		}
 
 		public void Update()
 		{
 			// Projectiles always move to the right
-			Position.X += projectileMoveSpeed;
+			Position.X += iceBeamMoveSpeed;
+			//position.Y += 0;
 
-			// Deactivate the bullet if it goes out of screen
-			if (Position.X + Texture.Width / 2 > viewport.Width)
-				Active = false;
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, Position, null, Color.White, 0f,
-				new Vector2(Width / 2, Height / 2), 1f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(texture, position, null, Color.White, position.Y*3,
+				 Vector2.Zero, 2f, SpriteEffects.None, 0f);
 		}
 	}
 }
