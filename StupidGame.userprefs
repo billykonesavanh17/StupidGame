@@ -2,11 +2,11 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="StupidGame/Controller/StupidGame.cs">
     <Files>
-      <File FileName="StupidGame/Controller/StupidGame.cs" Line="163" Column="60" />
-      <File FileName="StupidGame/Model/Enemy.cs" Line="1" Column="1" />
+      <File FileName="StupidGame/Controller/StupidGame.cs" Line="479" Column="21" />
+      <File FileName="StupidGame/Model/Enemy.cs" Line="87" Column="4" />
       <File FileName="StupidGame/Model/Projectile.cs" Line="1" Column="1" />
       <File FileName="StupidGame/Model/Player.cs" Line="1" Column="1" />
-      <File FileName="StupidGame/Model/IceBeamWeapon.cs" Line="1" Column="1" />
+      <File FileName="StupidGame/Model/IceBeamWeapon.cs" Line="73" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
